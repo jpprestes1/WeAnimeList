@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { searchAnime, type AnimeSummary } from "../route/jikanApi";
+import { useI18n } from "../i18n/I18nProvider";
 import "../styles/review.css";
 
 const recentReviews = [
@@ -31,6 +32,8 @@ const recentReviews = [
 ];
 
 export function CreateAnimeReviewPage() {
+  const { t } = useI18n();
+
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AnimeSummary[]>([]);
   const [selectedAnime, setSelectedAnime] = useState<AnimeSummary | null>(null);
@@ -70,7 +73,7 @@ export function CreateAnimeReviewPage() {
           setSearchError(
             error instanceof Error
               ? error.message
-              : "Could not load anime suggestions right now.",
+              : t("review.searchFallbackError"),
           );
         }
       } finally {
@@ -103,7 +106,9 @@ export function CreateAnimeReviewPage() {
   const selectedMeta = [
     selectedAnime?.type,
     selectedAnime?.year ? String(selectedAnime.year) : null,
-    selectedAnime?.episodes ? `${selectedAnime.episodes} Episodes` : null,
+    selectedAnime?.episodes
+      ? t("review.episodes", { count: selectedAnime.episodes })
+      : null,
   ]
     .filter(Boolean)
     .join(" - ");
@@ -115,15 +120,15 @@ export function CreateAnimeReviewPage() {
     <section className="review-page">
       <header className="review-header">
         <div>
-          <h1>Create New Review</h1>
-          <p>Share your thoughts on what you watched recently.</p>
+          <h1>{t("review.title")}</h1>
+          <p>{t("review.subtitle")}</p>
         </div>
         <div className="review-header-actions">
           <button type="button" className="ghost">
-            Cancel
+            {t("common.cancel")}
           </button>
           <button type="button" className="primary">
-            Publish Review
+            {t("common.publishReview")}
           </button>
         </div>
       </header>
@@ -131,7 +136,7 @@ export function CreateAnimeReviewPage() {
       <div className="review-layout">
         <div className="review-main">
           <section className="panel">
-            <h2>Select Anime</h2>
+            <h2>{t("review.selectAnime")}</h2>
             <div className="anime-search-wrap">
               <input
                 type="text"
@@ -141,19 +146,21 @@ export function CreateAnimeReviewPage() {
                 onBlur={() => {
                   window.setTimeout(() => setIsSearchFocused(false), 100);
                 }}
-                placeholder="Search for anime title..."
+                placeholder={t("review.searchPlaceholder")}
               />
 
               {shouldShowSuggestions && (
                 <div className="anime-suggestions" role="listbox">
-                  {isSearching && <p className="search-state">Searching...</p>}
+                  {isSearching && (
+                    <p className="search-state">{t("common.searching")}</p>
+                  )}
 
                   {!isSearching && searchError && (
                     <p className="search-state error">{searchError}</p>
                   )}
 
                   {!isSearching && !searchError && suggestions.length === 0 && (
-                    <p className="search-state">No anime found.</p>
+                    <p className="search-state">{t("common.noAnimeFound")}</p>
                   )}
 
                   {!isSearching &&
@@ -203,18 +210,22 @@ export function CreateAnimeReviewPage() {
                   <img src={selectedPosterUrl} alt={selectedAnime.title} />
                 ) : (
                   <div className="selected-anime-fallback" aria-hidden="true">
-                    No image
+                    {t("common.noImage")}
                   </div>
                 )}
                 <div>
                   <h3>{selectedAnime.title}</h3>
-                  <p>{selectedMeta || "Details unavailable"}</p>
+                  <p>{selectedMeta || t("common.detailsUnavailable")}</p>
                   <div className="chip-row">
                     {selectedAnime.status && (
                       <span>{selectedAnime.status}</span>
                     )}
                     {typeof selectedAnime.score === "number" && (
-                      <span>Score {selectedAnime.score.toFixed(1)}</span>
+                      <span>
+                        {t("review.scoreLabel", {
+                          value: selectedAnime.score.toFixed(1),
+                        })}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -223,26 +234,24 @@ export function CreateAnimeReviewPage() {
           </section>
 
           <section className="panel">
-            <h2>Rating and Review</h2>
-            <label htmlFor="review-title">Review Title (Optional)</label>
+            <h2>{t("review.ratingReview")}</h2>
+            <label htmlFor="review-title">{t("review.reviewTitleLabel")}</label>
             <input
               id="review-title"
               type="text"
-              placeholder="A visual masterpiece with pacing issues"
+              placeholder={t("review.reviewTitlePlaceholder")}
             />
-            <label htmlFor="review-content">Your Thoughts</label>
+            <label htmlFor="review-content">{t("review.thoughtsLabel")}</label>
             <textarea
               id="review-content"
               rows={7}
-              placeholder="Write your in-depth review here. No spoilers please!"
+              placeholder={t("review.thoughtsPlaceholder")}
             />
-            <p className="small-muted">
-              Markdown supported - 0 / 5000 characters
-            </p>
+            <p className="small-muted">{t("review.markdownHelp")}</p>
           </section>
 
           <section className="recent-panel">
-            <h2>Recent Reviews from Your Groups</h2>
+            <h2>{t("review.recentReviews")}</h2>
             <div className="recent-grid">
               {recentReviews.map((item) => (
                 <article key={item.user} className="recent-card">
@@ -260,30 +269,30 @@ export function CreateAnimeReviewPage() {
 
         <aside className="review-side">
           <section className="panel sticky">
-            <h2>Share With</h2>
-            <label htmlFor="group">Select Group</label>
-            <select id="group" defaultValue="All Friends">
-              <option>All Friends</option>
-              <option>Shonen Enthusiasts</option>
-              <option>Slice of Life Club</option>
-              <option>Weekend Watchers</option>
+            <h2>{t("review.shareWith")}</h2>
+            <label htmlFor="group">{t("review.selectGroup")}</label>
+            <select id="group" defaultValue={t("review.groupAllFriends")}>
+              <option>{t("review.groupAllFriends")}</option>
+              <option>{t("review.groupShonen")}</option>
+              <option>{t("review.groupSlice")}</option>
+              <option>{t("review.groupWeekend")}</option>
             </select>
             <div className="toggle-row">
-              <span>Contains Spoilers</span>
+              <span>{t("review.containsSpoilers")}</span>
               <input type="checkbox" />
             </div>
             <div className="toggle-row">
-              <span>Allow Comments</span>
+              <span>{t("review.allowComments")}</span>
               <input type="checkbox" defaultChecked />
             </div>
           </section>
 
           <section className="tips-card">
-            <h3>Review Tips</h3>
+            <h3>{t("review.reviewTips")}</h3>
             <ul>
-              <li>Mention specific episodes that stood out.</li>
-              <li>Discuss animation quality and sound design.</li>
-              <li>Keep spoilers hidden or marked.</li>
+              <li>{t("review.tip1")}</li>
+              <li>{t("review.tip2")}</li>
+              <li>{t("review.tip3")}</li>
             </ul>
           </section>
         </aside>

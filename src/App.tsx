@@ -2,11 +2,17 @@ import { useState } from "react";
 import { SideRail } from "./components/layout/SideRail";
 import { AnimeSocialDashboardPage } from "./pages/AnimeSocialDashboardPage";
 import { CreateAnimeReviewPage } from "./pages/CreateAnimeReviewPage";
+import { AnimeGuessrPage } from "./pages/AnimeGuessrPage";
+import { useI18n } from "./i18n/I18nProvider";
 import "./styles/tokens.css";
 import "./styles/app-layout.css";
 
 function App() {
-  const [screen, setScreen] = useState<"dashboard" | "review">("dashboard");
+  const { t } = useI18n();
+
+  const [screen, setScreen] = useState<"dashboard" | "review" | "guessr">(
+    "dashboard",
+  );
 
   return (
     <div className="app-shell">
@@ -19,22 +25,27 @@ function App() {
             className={screen === "dashboard" ? "active" : ""}
             onClick={() => setScreen("dashboard")}
           >
-            Anime Social Dashboard
+            {t("app.dashboard")}
           </button>
           <button
             type="button"
             className={screen === "review" ? "active" : ""}
             onClick={() => setScreen("review")}
           >
-            Create New Anime Review
+            {t("app.review")}
+          </button>
+          <button
+            type="button"
+            className={screen === "guessr" ? "active" : ""}
+            onClick={() => setScreen("guessr")}
+          >
+            {t("app.guessr")}
           </button>
         </div>
 
-        {screen === "dashboard" ? (
-          <AnimeSocialDashboardPage />
-        ) : (
-          <CreateAnimeReviewPage />
-        )}
+        {screen === "dashboard" && <AnimeSocialDashboardPage />}
+        {screen === "review" && <CreateAnimeReviewPage />}
+        {screen === "guessr" && <AnimeGuessrPage />}
       </main>
     </div>
   );

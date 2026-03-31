@@ -30,6 +30,7 @@
 .review-header-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .review-header-actions button {
@@ -104,6 +105,8 @@
   background: #081121;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  max-height: min(340px, 55vh);
+  overflow-y: auto;
 }
 
 .search-state {
@@ -218,6 +221,7 @@
 .chip-row {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .chip-row span {
@@ -338,5 +342,68 @@
 
   .sticky {
     position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .review-page {
+    padding: 16px;
+  }
+
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .review-header-actions {
+    width: 100%;
+  }
+
+  .review-header-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .recent-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .review-page {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .panel,
+  .recent-panel,
+  .tips-card {
+    padding: 12px;
+  }
+
+  .selected-anime {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-anime img,
+  .selected-anime-fallback {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+  }
+
+  .anime-suggestion-item {
+    grid-template-columns: 32px minmax(0, 1fr);
+    padding: 8px 10px;
+  }
+
+  .anime-suggestion-item img,
+  .anime-thumb-fallback {
+    width: 32px;
+    height: 46px;
+  }
+
+  .toggle-row {
+    gap: 10px;
   }
 }

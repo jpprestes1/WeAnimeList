@@ -1,5 +1,6 @@
 import { AnimePosterCard } from "../components/common/AnimePosterCard";
 import { RatingStars } from "../components/common/RatingStars";
+import { useI18n } from "../i18n/I18nProvider";
 import "../styles/dashboard.css";
 
 type FriendAnime = {
@@ -11,7 +12,7 @@ type FriendAnime = {
 type FriendBlock = {
   initials: string;
   name: string;
-  lastSeen: string;
+  lastSeenHours: number;
   accent: string;
   list: FriendAnime[];
 };
@@ -20,7 +21,7 @@ const friendBlocks: FriendBlock[] = [
   {
     initials: "IU",
     name: "Iuri",
-    lastSeen: "2h atras",
+    lastSeenHours: 2,
     accent: "magenta",
     list: [
       {
@@ -46,7 +47,7 @@ const friendBlocks: FriendBlock[] = [
   {
     initials: "BA",
     name: "Batata",
-    lastSeen: "5h atras",
+    lastSeenHours: 5,
     accent: "green",
     list: [
       {
@@ -80,17 +81,19 @@ const sideRatings = [
 ];
 
 export function AnimeSocialDashboardPage() {
+  const { t } = useI18n();
+
   return (
     <section className="dashboard-page">
       <div className="dashboard-main">
         <header className="dashboard-header">
           <div>
-            <h1>Assistidos</h1>
-            <p>Veja o que seus amigos estao acompanhando.</p>
+            <h1>{t("dashboard.title")}</h1>
+            <p>{t("dashboard.subtitle")}</p>
           </div>
           <div className="dashboard-actions">
-            <button type="button">Filtro</button>
-            <button type="button">Grade</button>
+            <button type="button">{t("dashboard.filter")}</button>
+            <button type="button">{t("dashboard.grid")}</button>
           </div>
         </header>
 
@@ -103,7 +106,10 @@ export function AnimeSocialDashboardPage() {
                 </span>
                 <div>
                   <h2>{friend.name}</h2>
-                  <p>Ultima atividade: {friend.lastSeen}</p>
+                  <p>
+                    {t("dashboard.lastActivity")}:{" "}
+                    {t("dashboard.hoursAgo", { count: friend.lastSeenHours })}
+                  </p>
                 </div>
               </div>
 
@@ -123,8 +129,10 @@ export function AnimeSocialDashboardPage() {
       </div>
 
       <aside className="dashboard-side">
-        <h3>Avaliacoes dos amigos</h3>
-        <div className="active-friend">Batata visualizando agora</div>
+        <h3>{t("dashboard.friendsRatings")}</h3>
+        <div className="active-friend">
+          {t("dashboard.watchingNow", { name: "Batata" })}
+        </div>
         <div className="review-list">
           {sideRatings.map((item) => (
             <article key={item.title} className="review-row">

@@ -27,6 +27,8 @@ body {
   align-items: center;
   padding: 18px 0;
   gap: 18px;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .brand-dot {
@@ -48,6 +50,16 @@ body {
   flex-direction: column;
   gap: 14px;
   margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.rail-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .rail-btn {
@@ -70,17 +82,45 @@ body {
 }
 
 .rail-btn-bottom {
-  margin-top: auto;
+  margin-top: 0;
+}
+
+.rail-language select {
+  width: 52px;
+  border: 1px solid var(--line);
+  background: #0f1726;
+  color: var(--text-main);
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .page-wrap {
   padding: 26px;
+  width: min(1400px, 100%);
+  margin-inline: auto;
 }
 
 .screen-switch {
   display: inline-flex;
   gap: 8px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .screen-switch button {
@@ -103,6 +143,10 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .page-wrap {
+    padding: 20px;
+  }
+
   .side-rail {
     order: 2;
     flex-direction: row;
@@ -110,16 +154,57 @@ body {
     border-right: 0;
     border-top: 1px solid var(--line);
     padding: 10px;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
   }
 
   .side-rail-nav {
     flex-direction: row;
     margin-top: 0;
     flex: initial;
+    width: max-content;
   }
 
-  .brand-dot,
-  .rail-btn-bottom {
+  .brand-dot {
     display: none;
+  }
+
+  .rail-footer {
+    margin-top: 0;
+    flex-direction: row;
+    gap: 8px;
+    width: max-content;
+  }
+
+  .rail-language select {
+    width: 58px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-wrap {
+    padding: 14px;
+  }
+
+  .screen-switch {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .screen-switch button {
+    width: 100%;
+  }
+
+  .side-rail {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .side-rail-nav {
+    width: max-content;
   }
 }

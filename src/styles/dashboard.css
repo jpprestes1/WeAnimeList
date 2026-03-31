@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 18px;
+  min-width: 0;
 }
 
 .dashboard-main,
@@ -18,6 +19,7 @@
 
 .dashboard-main {
   padding: 26px;
+  min-width: 0;
 }
 
 .dashboard-side {
@@ -45,6 +47,7 @@
 .dashboard-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .dashboard-actions button {
@@ -191,5 +194,46 @@
 @media (max-width: 1200px) {
   .dashboard-page {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-main,
+  .dashboard-side {
+    padding: 18px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+  }
+
+  .dashboard-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-main,
+  .dashboard-side {
+    padding: 14px;
+  }
+
+  .friend-anime-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .review-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .review-row strong {
+    align-self: flex-end;
   }
 }
