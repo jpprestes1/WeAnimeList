@@ -400,7 +400,6 @@ export function AnimeGuessrPage() {
     setAnidleGuesses(nextGuesses);
     setAnidleQuery("");
     setAnidleSuggestions([]);
-    setIsAnidleSearchFocused(false);
 
     if (anime.mal_id === anidleTargetAnime.mal_id) {
       setAnidleSolved(true);
@@ -615,14 +614,6 @@ export function AnimeGuessrPage() {
                       >
                         {t("common.newRound")}
                       </button>
-                      <button
-                        type="button"
-                        className="ghost"
-                        onClick={handleGiveUpAnidleRound}
-                        disabled={anidleHasEnded || !anidleTargetAnime}
-                      >
-                        {t("guessr.giveUpButton")}
-                      </button>
                     </div>
 
                     <div className="anidle-input-group">
@@ -693,8 +684,17 @@ export function AnimeGuessrPage() {
                         </div>
                       )}
                     </div>
+                    <div className="anidle-round-actions">
+                      <button
+                        type="button"
+                        className="ghost"
+                        onClick={handleGiveUpAnidleRound}
+                        disabled={anidleHasEnded || !anidleTargetAnime}
+                      >
+                        {t("guessr.giveUpButton")}
+                      </button>
+                    </div>
                   </div>
-
                   <div
                     className="anidle-board"
                     role="table"

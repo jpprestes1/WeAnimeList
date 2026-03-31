@@ -345,7 +345,8 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 8px);
+  top: 100%;
+  margin-top: 2px;
   z-index: 25;
   border: 1px solid #2e4567;
   background: #0b1423;
