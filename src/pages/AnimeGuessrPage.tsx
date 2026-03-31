@@ -97,9 +97,9 @@ function buildAnidleHint(
 ): AnidleHint {
   return {
     type: compareText(guess.type, target.type),
-    year: compareNumber(guess.year, target.year, 2),
-    episodes: compareNumber(guess.episodes, target.episodes, 12),
-    score: compareNumber(guess.score, target.score, 0.7),
+    year: compareNumber(guess.year, target.year, 1),
+    episodes: compareNumber(guess.episodes, target.episodes, 1),
+    score: compareNumber(guess.score, target.score, 0.1),
     source: compareText(guess.source, target.source),
   };
 }
