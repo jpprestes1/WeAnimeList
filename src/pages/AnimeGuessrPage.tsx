@@ -53,6 +53,10 @@ function normalizeText(value: string | null | undefined): string {
   return value?.trim().toLowerCase() ?? "";
 }
 
+function isMovieType(value: string | null | undefined): boolean {
+  return normalizeText(value) === "movie";
+}
+
 function compareText(
   guessValue: string | null | undefined,
   targetValue: string | null | undefined,
@@ -124,6 +128,14 @@ function formatGuessValue(value: string | number | null | undefined): string {
   return "-";
 }
 
+function formatScoreValue(value: number | null | undefined): string {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "-";
+  }
+
+  return value.toFixed(2);
+}
+
 export function AnimeGuessrPage() {
   const { t } = useI18n();
 
@@ -154,6 +166,8 @@ export function AnimeGuessrPage() {
   const [isSearchingAnidle, setIsSearchingAnidle] = useState(false);
   const [isAnidleSearchFocused, setIsAnidleSearchFocused] = useState(false);
   const [anidleSolved, setAnidleSolved] = useState(false);
+  const [anidleGaveUp, setAnidleGaveUp] = useState(false);
+  const [anidleRevealedHints, setAnidleRevealedHints] = useState(0);
 
   const posterUrl = resolvePosterUrl(currentAnime);
   const hasAnswered = selectedOptionId !== null;
@@ -162,10 +176,12 @@ export function AnimeGuessrPage() {
   const isCorrectAnswer =
     hasAnswered && correctId !== null ? selectedOptionId === correctId : false;
 
-  const anidleHasEnded = anidleSolved;
+  const anidleHasEnded = anidleSolved || anidleGaveUp;
+  const anidleMaxHints = 2;
   const shouldShowAnidleSuggestions =
     isAnidleSearchFocused &&
     (isSearchingAnidle || anidleSuggestions.length > 0 || !!anidleError);
+  const anidleCoverUrl = resolvePosterUrl(anidleTargetAnime);
 
   const hintText = useMemo(() => {
     if (!currentAnime) {
@@ -240,6 +256,8 @@ export function AnimeGuessrPage() {
     setAnidleQuery("");
     setAnidleGuesses([]);
     setAnidleSolved(false);
+    setAnidleGaveUp(false);
+    setAnidleRevealedHints(0);
     setIsAnidleSearchFocused(false);
 
     try {
@@ -250,6 +268,7 @@ export function AnimeGuessrPage() {
 
       const candidates = response.data.filter(
         (anime) =>
+          !isMovieType(anime.type) &&
           anime.title.trim().length > 0 &&
           typeof anime.year === "number" &&
           typeof anime.episodes === "number",
@@ -312,6 +331,7 @@ export function AnimeGuessrPage() {
         const filteredSuggestions = response.data
           .filter((anime) => anime.mal_id !== anidleTargetAnime.mal_id)
           .filter((anime) => !guessedIds.has(anime.mal_id))
+          .filter((anime) => !isMovieType(anime.type))
           .filter((anime) => anime.title.trim().length > 0)
           .slice(0, 6);
 
@@ -395,6 +415,27 @@ export function AnimeGuessrPage() {
   function handleNextAnidleRound() {
     setAnidleRound((prevRound) => prevRound + 1);
     void loadAnidleRound();
+  }
+
+  function handleGiveUpAnidleRound() {
+    if (!anidleTargetAnime || anidleHasEnded || isLoadingAnidleRound) {
+      return;
+    }
+
+    setAnidleGaveUp(true);
+    setAnidleQuery("");
+    setAnidleSuggestions([]);
+    setIsAnidleSearchFocused(false);
+  }
+
+  function handleRevealAnidleHint() {
+    if (!anidleTargetAnime || anidleHasEnded) {
+      return;
+    }
+
+    setAnidleRevealedHints((previous) =>
+      Math.min(anidleMaxHints, previous + 1),
+    );
   }
 
   const anidleTargetTitle = anidleTargetAnime
@@ -566,13 +607,23 @@ export function AnimeGuessrPage() {
               ) : (
                 <>
                   <div className="anidle-search-wrap">
-                    <button
-                      type="button"
-                      className="primary"
-                      onClick={handleNextAnidleRound}
-                    >
-                      {t("common.newRound")}
-                    </button>
+                    <div className="anidle-round-actions">
+                      <button
+                        type="button"
+                        className="primary"
+                        onClick={handleNextAnidleRound}
+                      >
+                        {t("common.newRound")}
+                      </button>
+                      <button
+                        type="button"
+                        className="ghost"
+                        onClick={handleGiveUpAnidleRound}
+                        disabled={anidleHasEnded || !anidleTargetAnime}
+                      >
+                        {t("guessr.giveUpButton")}
+                      </button>
+                    </div>
 
                     <div className="anidle-input-group">
                       <input
@@ -709,11 +760,103 @@ export function AnimeGuessrPage() {
                       <strong>
                         {anidleSolved
                           ? t("guessr.solved")
-                          : t("guessr.roundEnded")}
+                          : anidleGaveUp
+                            ? t("guessr.gaveUp")
+                            : t("guessr.roundEnded")}
                       </strong>
                       <p>
                         {t("guessr.hiddenAnime")} <b>{anidleTargetTitle}</b>
                       </p>
+                    </div>
+                  )}
+
+                  {anidleGaveUp && anidleTargetAnime && (
+                    <div
+                      className="anidle-modal-backdrop"
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="anidle-giveup-title"
+                    >
+                      <div className="anidle-modal">
+                        <h3 id="anidle-giveup-title">
+                          {t("guessr.giveUpTitle")}
+                        </h3>
+                        <p>
+                          {t("guessr.giveUpReveal")} <b>{anidleTargetTitle}</b>
+                        </p>
+
+                        <div className="anidle-modal-content">
+                          <div className="anidle-modal-cover-wrap">
+                            {anidleCoverUrl ? (
+                              <img
+                                src={anidleCoverUrl}
+                                alt={t("guessr.revealedCoverAlt")}
+                                className="anidle-modal-cover"
+                              />
+                            ) : (
+                              <div className="anidle-modal-cover-fallback">
+                                {t("common.noImage")}
+                              </div>
+                            )}
+                          </div>
+
+                          <dl className="anidle-modal-meta">
+                            <div>
+                              <dt>{t("guessr.type")}</dt>
+                              <dd>
+                                {formatGuessValue(anidleTargetAnime.type)}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>{t("guessr.year")}</dt>
+                              <dd>
+                                {formatGuessValue(anidleTargetAnime.year)}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>{t("guessr.episodes")}</dt>
+                              <dd>
+                                {formatGuessValue(anidleTargetAnime.episodes)}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>{t("common.score")}</dt>
+                              <dd>
+                                {formatScoreValue(anidleTargetAnime.score)}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>{t("guessr.source")}</dt>
+                              <dd>
+                                {formatGuessValue(anidleTargetAnime.source)}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>{t("guessr.status")}</dt>
+                              <dd>
+                                {formatGuessValue(anidleTargetAnime.status)}
+                              </dd>
+                            </div>
+                          </dl>
+                        </div>
+
+                        <div className="anidle-modal-actions">
+                          <button
+                            type="button"
+                            className="ghost"
+                            onClick={() => setAnidleGaveUp(false)}
+                          >
+                            {t("common.close")}
+                          </button>
+                          <button
+                            type="button"
+                            className="primary"
+                            onClick={handleNextAnidleRound}
+                          >
+                            {t("common.newRound")}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </>
@@ -723,6 +866,69 @@ export function AnimeGuessrPage() {
         </section>
 
         <aside className="guessr-side">
+          {mode === "anidle" && (
+            <section className="anidle-hints" aria-live="polite">
+              <div className="anidle-hints-header">
+                <div>
+                  <h3>{t("guessr.hintsTitle")}</h3>
+                  <p>
+                    {t("guessr.hintsSubtitle", {
+                      revealed: anidleRevealedHints,
+                      total: anidleMaxHints,
+                    })}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={handleRevealAnidleHint}
+                  disabled={
+                    !anidleTargetAnime ||
+                    anidleHasEnded ||
+                    anidleRevealedHints >= anidleMaxHints
+                  }
+                >
+                  {anidleRevealedHints >= anidleMaxHints
+                    ? t("guessr.allHintsRevealed")
+                    : t("guessr.revealHintButton")}
+                </button>
+              </div>
+
+              <div className="anidle-hints-list">
+                {anidleRevealedHints === 0 && (
+                  <p className="anidle-hints-empty">
+                    {t("guessr.hintsHiddenState")}
+                  </p>
+                )}
+
+                {anidleRevealedHints >= 1 && (
+                  <article className="anidle-hint-card">
+                    <h4>{t("guessr.coverHintLabel")}</h4>
+                    {anidleCoverUrl ? (
+                      <img
+                        src={anidleCoverUrl}
+                        alt={t("guessr.posterClueAlt")}
+                        className="anidle-hint-cover"
+                      />
+                    ) : (
+                      <p>{t("common.noImage")}</p>
+                    )}
+                  </article>
+                )}
+
+                {anidleRevealedHints >= 2 && (
+                  <article className="anidle-hint-card">
+                    <h4>{t("guessr.descriptionHintLabel")}</h4>
+                    <p>
+                      {anidleTargetAnime?.synopsis?.trim() ||
+                        t("guessr.noDescriptionHint")}
+                    </p>
+                  </article>
+                )}
+              </div>
+            </section>
+          )}
+
           <section className="guessr-side-card">
             <h2>{t("guessr.howItWorks")}</h2>
             {mode === "classic" ? (

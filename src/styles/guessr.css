@@ -93,6 +93,12 @@
   padding: 16px;
 }
 
+.guessr-side {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
 .guessr-poster-wrap {
   border-radius: 12px;
   overflow: hidden;
@@ -271,6 +277,12 @@
   gap: 10px;
 }
 
+.anidle-round-actions {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
 .anidle-input-group {
   position: relative;
   min-width: 0;
@@ -288,6 +300,25 @@
 
 .anidle-search-wrap .primary:hover {
   filter: brightness(1.04);
+}
+
+.anidle-search-wrap .ghost {
+  border-radius: 10px;
+  border: 1px solid #3d5478;
+  background: #101b2c;
+  color: var(--text-main);
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.anidle-search-wrap .ghost:hover {
+  background: #16253b;
+}
+
+.anidle-search-wrap .ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .anidle-search-wrap .primary:focus-visible {
@@ -374,6 +405,91 @@
   color: #ff9da5;
 }
 
+.anidle-hints {
+  margin-top: 14px;
+  border: 1px solid #2a3f5f;
+  border-radius: 12px;
+  background: #0c1524;
+  padding: 12px;
+}
+
+.anidle-hints-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.anidle-hints-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.anidle-hints-header p {
+  margin: 4px 0 0;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.anidle-hints-header .ghost {
+  border-radius: 10px;
+  border: 1px solid #3d5478;
+  background: #101b2c;
+  color: var(--text-main);
+  font-weight: 700;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+
+.anidle-hints-header .ghost:hover {
+  background: #16253b;
+}
+
+.anidle-hints-header .ghost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.anidle-hints-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.anidle-hints-empty {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.anidle-hint-card {
+  border: 1px solid #2b4263;
+  border-radius: 10px;
+  background: #0f1b2d;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.anidle-hint-card h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.anidle-hint-card p {
+  margin: 0;
+  color: #c4d9f3;
+  line-height: 1.45;
+}
+
+.anidle-hint-cover {
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #33507a;
+  filter: blur(6px) brightness(0.65);
+}
 .anidle-board {
   margin-top: 14px;
   border: 1px solid #2a3f5f;
@@ -450,10 +566,139 @@
   content: " ↓";
 }
 
+.anidle-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 15, 0.7);
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  padding: 16px;
+}
+
+.anidle-modal {
+  width: min(520px, 100%);
+  border: 1px solid #2f4568;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0f1b2f, #0b1423);
+  box-shadow: var(--shadow-soft);
+  padding: 18px;
+}
+
+.anidle-modal h3 {
+  margin: 0;
+  font-size: 1.14rem;
+}
+
+.anidle-modal p {
+  margin: 10px 0 0;
+  color: var(--text-soft);
+}
+
+.anidle-modal-content {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.anidle-modal-cover-wrap {
+  border: 1px solid #2b4264;
+  border-radius: 10px;
+  background: #081121;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.anidle-modal-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.anidle-modal-cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-soft);
+}
+
+.anidle-modal-meta {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.anidle-modal-meta div {
+  border: 1px solid #2a3f5f;
+  border-radius: 9px;
+  background: #0b1526;
+  padding: 8px 10px;
+}
+
+.anidle-modal-meta dt {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.anidle-modal-meta dd {
+  margin: 4px 0 0;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.anidle-modal-synopsis {
+  margin: 0;
+  border: 1px solid #2a3f5f;
+  border-radius: 10px;
+  background: #0b1526;
+  color: #c7daf2;
+  padding: 10px;
+  line-height: 1.5;
+}
+
+.anidle-modal-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.anidle-modal-actions button {
+  border-radius: 10px;
+  border: 1px solid #2e4262;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.anidle-modal-actions .ghost {
+  background: #101b2c;
+  color: var(--text-main);
+}
+
+.anidle-modal-actions .primary {
+  border-color: #3a8cff;
+  background: linear-gradient(135deg, #2cb3ff, #3f76ff);
+  color: #fff;
+}
+
 @media (max-width: 1100px) {
   .guessr-layout {
     grid-template-columns: 1fr;
   }
+}
+.anidle-hints-header {
+  flex-direction: column;
+}
+
+.anidle-hints-header .ghost {
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -480,6 +725,10 @@
 
   .anidle-search-wrap {
     grid-template-columns: 1fr;
+  }
+
+  .anidle-round-actions {
+    grid-template-columns: 1fr 1fr;
   }
 
   .anidle-row {
@@ -515,6 +764,14 @@
 
   .anidle-board {
     overflow-x: auto;
+  }
+
+  .anidle-modal-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .anidle-round-actions {
+    grid-template-columns: 1fr;
   }
 
   .anidle-row {

@@ -15,11 +15,16 @@ body {
 
 .app-shell {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 76px 1fr;
+  display: block;
 }
 
 .side-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 76px;
+  z-index: 40;
   border-right: 1px solid var(--line);
   background: linear-gradient(180deg, #0a111f 0%, #0a0f19 100%);
   display: flex;
@@ -111,8 +116,8 @@ body {
 
 .page-wrap {
   padding: 26px;
-  width: min(1400px, 100%);
-  margin-inline: auto;
+  margin-left: 76px;
+  width: calc(100% - 76px);
 }
 
 .screen-switch {
@@ -139,15 +144,14 @@ body {
 }
 
 @media (max-width: 960px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-  }
-
   .page-wrap {
     padding: 20px;
+    margin-left: 0;
+    width: 100%;
   }
 
   .side-rail {
+    position: static;
     order: 2;
     flex-direction: row;
     justify-content: center;
