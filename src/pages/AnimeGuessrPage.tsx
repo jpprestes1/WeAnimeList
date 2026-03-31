@@ -38,9 +38,7 @@ function pickShuffled<T>(list: T[], amount: number): T[] {
 }
 
 function resolvePosterUrl(anime: AnimeSummary | null): string | null {
-  if (!anime) {
-    return null;
-  }
+  if (!anime) return null;
 
   return (
     anime.images?.webp?.large_image_url ??
