@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+
+import { searchAnime, type AnimeSummary } from "../route/jikanApi";
 import "../styles/review.css";
 
 const recentReviews = [
@@ -28,6 +31,86 @@ const recentReviews = [
 ];
 
 export function CreateAnimeReviewPage() {
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<AnimeSummary[]>([]);
+  const [selectedAnime, setSelectedAnime] = useState<AnimeSummary | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  useEffect(() => {
+    const normalizedQuery = query.trim();
+
+    if (normalizedQuery.length < 2) {
+      setSuggestions([]);
+      setSearchError(null);
+      setIsSearching(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const timeoutId = window.setTimeout(async () => {
+      setIsSearching(true);
+      setSearchError(null);
+
+      try {
+        const response = await searchAnime({
+          q: normalizedQuery,
+          limit: 6,
+          order_by: "popularity",
+        });
+
+        if (!cancelled) {
+          setSuggestions(response.data);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setSuggestions([]);
+          setSearchError(
+            error instanceof Error
+              ? error.message
+              : "Could not load anime suggestions right now.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSearching(false);
+        }
+      }
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [query]);
+
+  function handleSelectAnime(anime: AnimeSummary) {
+    setSelectedAnime(anime);
+    setQuery(anime.title_english?.trim() ? anime.title_english : anime.title);
+    setSuggestions([]);
+    setSearchError(null);
+    setIsSearchFocused(false);
+  }
+
+  const selectedPosterUrl =
+    selectedAnime?.images?.webp?.large_image_url ??
+    selectedAnime?.images?.webp?.image_url ??
+    selectedAnime?.images?.jpg?.large_image_url ??
+    selectedAnime?.images?.jpg?.image_url;
+
+  const selectedMeta = [
+    selectedAnime?.type,
+    selectedAnime?.year ? String(selectedAnime.year) : null,
+    selectedAnime?.episodes ? `${selectedAnime.episodes} Episodes` : null,
+  ]
+    .filter(Boolean)
+    .join(" - ");
+
+  const shouldShowSuggestions =
+    isSearchFocused && (isSearching || suggestions.length > 0 || !!searchError);
+
   return (
     <section className="review-page">
       <header className="review-header">
@@ -49,21 +132,94 @@ export function CreateAnimeReviewPage() {
         <div className="review-main">
           <section className="panel">
             <h2>Select Anime</h2>
-            <input type="text" placeholder="Search for anime title..." />
-            <div className="selected-anime">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn6o3MSSAa54Xx9fY0IBiSMgYUJaRUA5q15QpTY4pb_k37wSrxOk1Njb79VxCuDyZ6ZjLWUBTmWS5nGC93BcIedUI8DbFKj7A6Gdx7AZBqTOjgiL25xEOibUyRk2FXdk7-Yz-t9ZWFgiWnOkF7Kj9Pfry5D4wy8Jo4hyufFeQf_lP9GetwyGlETYPrnVKajGjJ7qgfg0uYtLjSWHSfsoMzAggExhzNXhl17mmkSqwt7uDtWRaWvRJDtqk9_Sd12_DkSo0tyL-bqWkS"
-                alt="Kimetsu no Yaiba"
+            <div className="anime-search-wrap">
+              <input
+                type="text"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => {
+                  window.setTimeout(() => setIsSearchFocused(false), 100);
+                }}
+                placeholder="Search for anime title..."
               />
-              <div>
-                <h3>Kimetsu no Yaiba: Katanakaji no Sato-hen</h3>
-                <p>Season 3 - 2023 - 11 Episodes</p>
-                <div className="chip-row">
-                  <span>Action</span>
-                  <span>Fantasy</span>
+
+              {shouldShowSuggestions && (
+                <div className="anime-suggestions" role="listbox">
+                  {isSearching && <p className="search-state">Searching...</p>}
+
+                  {!isSearching && searchError && (
+                    <p className="search-state error">{searchError}</p>
+                  )}
+
+                  {!isSearching && !searchError && suggestions.length === 0 && (
+                    <p className="search-state">No anime found.</p>
+                  )}
+
+                  {!isSearching &&
+                    !searchError &&
+                    suggestions.map((anime) => {
+                      const poster =
+                        anime.images?.webp?.image_url ??
+                        anime.images?.jpg?.image_url ??
+                        anime.images?.jpg?.large_image_url;
+
+                      return (
+                        <button
+                          key={anime.mal_id}
+                          type="button"
+                          className="anime-suggestion-item"
+                          onMouseDown={(event) => event.preventDefault()}
+                          onClick={() => handleSelectAnime(anime)}
+                        >
+                          {poster ? (
+                            <img src={poster} alt={anime.title} />
+                          ) : (
+                            <div
+                              className="anime-thumb-fallback"
+                              aria-hidden="true"
+                            >
+                              ?
+                            </div>
+                          )}
+                          <span>
+                            <strong>{anime.title}</strong>
+                            <small>
+                              {[anime.type, anime.year]
+                                .filter(Boolean)
+                                .join(" - ")}
+                            </small>
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+
+            {selectedAnime && (
+              <div className="selected-anime">
+                {selectedPosterUrl ? (
+                  <img src={selectedPosterUrl} alt={selectedAnime.title} />
+                ) : (
+                  <div className="selected-anime-fallback" aria-hidden="true">
+                    No image
+                  </div>
+                )}
+                <div>
+                  <h3>{selectedAnime.title}</h3>
+                  <p>{selectedMeta || "Details unavailable"}</p>
+                  <div className="chip-row">
+                    {selectedAnime.status && (
+                      <span>{selectedAnime.status}</span>
+                    )}
+                    {typeof selectedAnime.score === "number" && (
+                      <span>Score {selectedAnime.score.toFixed(1)}</span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </section>
 
           <section className="panel">
