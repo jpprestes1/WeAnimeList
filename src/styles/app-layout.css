@@ -1,0 +1,125 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 76px 1fr;
+}
+
+.side-rail {
+  border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, #0a111f 0%, #0a0f19 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0;
+  gap: 18px;
+}
+
+.brand-dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.75rem;
+  color: white;
+  background: linear-gradient(140deg, var(--accent), #4c6fff);
+  box-shadow: 0 10px 28px rgba(44, 179, 255, 0.35);
+}
+
+.side-rail-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.rail-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #111a2a;
+  color: var(--text-soft);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.rail-btn.active,
+.rail-btn:hover {
+  border-color: #3b79c5;
+  color: #d6e9ff;
+  background: linear-gradient(160deg, #132841 0%, #102036 100%);
+}
+
+.rail-btn-bottom {
+  margin-top: auto;
+}
+
+.page-wrap {
+  padding: 26px;
+}
+
+.screen-switch {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.screen-switch button {
+  border: 1px solid var(--line);
+  background: #0f1726;
+  color: var(--text-soft);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.screen-switch button.active {
+  border-color: var(--accent);
+  color: var(--text-main);
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .side-rail {
+    order: 2;
+    flex-direction: row;
+    justify-content: center;
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    padding: 10px;
+  }
+
+  .side-rail-nav {
+    flex-direction: row;
+    margin-top: 0;
+    flex: initial;
+  }
+
+  .brand-dot,
+  .rail-btn-bottom {
+    display: none;
+  }
+}

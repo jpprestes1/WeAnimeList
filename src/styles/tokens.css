@@ -1,0 +1,25 @@
+:root {
+  --bg-main: #06080f;
+  --bg-panel: #0f1420;
+  --bg-soft: #161e2d;
+  --line: #233047;
+  --text-main: #e7eefc;
+  --text-soft: #96a4be;
+  --accent: #2cb3ff;
+  --accent-warm: #ff9f44;
+  --accent-green: #43d17f;
+  --danger: #ff5f6d;
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+
+  --shadow-soft: 0 18px 50px rgba(5, 10, 20, 0.4);
+
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: var(--text-main);
+  background: radial-gradient(
+    circle at 10% 10%,
+    #0d1d31 0%,
+    var(--bg-main) 45%
+  );
+}
